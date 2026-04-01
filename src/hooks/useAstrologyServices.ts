@@ -314,17 +314,12 @@ const useAstrologyServices = () => {
   };
 
   const formatMessage = (message: any, isAstrologer: boolean) => {
-    console.log(
-      userId,
-      isAstrologer
-        ? message?.senderModel === "Astrologer"
-        : message?.senderModel === "User",
-      "getting message"
-    );
     return {
       id: message?._id,
       message: message?.message,
       timestamp: message?.timestamp,
+      type: message?.type ?? "text",
+      isRead: message?.isRead ?? false,
       isOwnMessage: isAstrologer
         ? message?.senderModel === "Astrologer"
         : message?.senderModel === "User",

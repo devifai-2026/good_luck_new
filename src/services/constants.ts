@@ -159,7 +159,7 @@ export const endPoints = {
 
   getCalenderEventsByType: "/calender-event/type",
 };
-export const enviornment = Enviornments.local;
+export const enviornment = Enviornments.production;
 export const indianStatesAndCities = [
   {
     state: "Andhra Pradesh",

@@ -25,7 +25,7 @@ const useCommonFunctionalities = () => {
       const response = await addMoneyInWalletById(userId, {
         amount,
         description,
-        transactionid,
+        transactionId: transactionid,
       });
       //response?.data, "after rechargig");
       dispatch(updateWallet({ balance: response?.data?.updatedBalance }));

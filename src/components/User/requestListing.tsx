@@ -51,6 +51,7 @@ interface Message {
 
 interface MessageListProps {
   messages: Message[];
+  scrollEnabled?: boolean;
 }
 
 const RequestListItem: React.FC<{ message: Message }> = ({ message }) => {
@@ -297,7 +298,7 @@ const RequestListItem: React.FC<{ message: Message }> = ({ message }) => {
   );
 };
 
-const RequestList: React.FC<MessageListProps> = ({ messages }) => {
+const RequestList: React.FC<MessageListProps> = ({ messages, scrollEnabled = true }) => {
   return (
     <View>
       <FlatList
@@ -305,7 +306,8 @@ const RequestList: React.FC<MessageListProps> = ({ messages }) => {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <RequestListItem message={item} />}
         style={styles.messageList}
-        scrollEnabled
+        scrollEnabled={scrollEnabled}
+        nestedScrollEnabled
       />
     </View>
   );

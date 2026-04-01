@@ -46,6 +46,8 @@ export interface MessageType {
   isOwnMessage: boolean;
   timestamp: number;
   type?: ChatType;
+  isRead?: boolean;
+  messageId?: string;
 }
 
 export enum ChatStatus {
@@ -250,6 +252,7 @@ const AstrologyChatComponent = () => {
         isOwnMessage: true,
         timestamp: Date.now(),
         type: type,
+        isRead: false,
       };
 
       setAstrologyMessageList([...astrologyMessageList, newMessageObj]);
@@ -299,23 +302,35 @@ const AstrologyChatComponent = () => {
   };
 
   useEffect(() => {
-    const handleMessageReceived = (newMessage: any) => {
-      // console.log(newMessage);
-      if (
-        newMessage?.receiverId === userId ||
-        newMessage?.receiverId === astrologerId
-      ) {
+    const handleMessageReceived = (newMsg: any) => {
+      const myId = isAstrologer ? astrologerId : userId;
+      if (newMsg?.receiverId === myId) {
         setAstrologyMessageList((prevMessages) => [
           ...prevMessages,
           {
-            id: Date.now(),
-            message: newMessage?.message,
-            isOwnMessage: newMessage?.senderId === userId,
-            timestamp: Date.now(),
-            type: newMessage?.type ?? ChatType.text,
+            id: String(newMsg?.messageId ?? Date.now()),
+            messageId: newMsg?.messageId,
+            message: newMsg?.message,
+            isOwnMessage: false,
+            timestamp: newMsg?.timestamp ?? Date.now(),
+            type: newMsg?.type ?? ChatType.text,
+            isRead: false,
           },
         ]);
+        // Emit mark-as-read so sender sees double ticks
+        if (roomId) {
+          socketServices.emit("mark-as-read", { roomId, readerId: myId });
+        }
       }
+    };
+
+    const handleMessagesRead = () => {
+      // Mark all own (sent) messages as read
+      setAstrologyMessageList((prevMessages) =>
+        prevMessages.map((msg) =>
+          msg.isOwnMessage ? { ...msg, isRead: true } : msg,
+        ),
+      );
     };
 
     const handleChatError = (error: any) => {
@@ -331,9 +346,7 @@ const AstrologyChatComponent = () => {
     };
 
     const handleChatEnd = (data: any) => {
-      console.log("handle chat end", "isastrologer", isAstrologer);
       notifyMessage(data.reason);
-
       dispatch(
         updateAstrologyChatDetails({
           chatStatus: ChatStatus.ended,
@@ -342,29 +355,23 @@ const AstrologyChatComponent = () => {
           roomId: "",
         }),
       );
-
       if (isAstrologer) navigation.navigate("astrologerhomeascreen");
-      else {
-        navigation.navigate("talkToAstrologer");
-      }
+      else navigation.navigate("talkToAstrologer");
     };
+
     const handleChatTimer = (data: any) => {
-      console.log("⏱️ Chat timer from server:", data);
       if (data.elapsedTime) {
-        // Sync with server's minute-based timer
         setChatDuration(data.elapsedTime * 60);
       }
     };
 
     const handleChatAccepted = (data: any) => {
-      console.log("✅ Chat accepted event received in ChatUI:", data);
       dispatch(
         updateAstrologyChatDetails({
           chatStatus: ChatStatus.accepted,
           roomId: data.roomId,
         }),
       );
-      // 🔥 Join the room to receive messages
       if (data.roomId) {
         socketServices.emit(SOCKET_TYPES.joinRoom, data.roomId);
       }
@@ -372,7 +379,7 @@ const AstrologyChatComponent = () => {
 
     if (socketServices) {
       socketServices.on(SOCKET_TYPES.receivedMessage, handleMessageReceived);
-
+      socketServices.on("messages-read", handleMessagesRead);
       socketServices.on(SOCKET_TYPES.chatPaused, handlePausedChat);
       socketServices.on(SOCKET_TYPES.chatResumes, handleResumedChat);
       socketServices.on(SOCKET_TYPES.chatError, handleChatError);
@@ -384,6 +391,7 @@ const AstrologyChatComponent = () => {
     return () => {
       socketServices.removeListener(SOCKET_TYPES.chatRequested);
       socketServices.removeListener(SOCKET_TYPES.receivedMessage);
+      socketServices.removeListener("messages-read");
       socketServices.removeListener(SOCKET_TYPES.chatResponse);
       socketServices.removeListener(SOCKET_TYPES.chatRejected);
       socketServices.removeListener(SOCKET_TYPES.chatError);
@@ -391,7 +399,7 @@ const AstrologyChatComponent = () => {
       socketServices.removeListener(SOCKET_TYPES.chatAccepted);
       socketServices.removeListener("chat-timer");
     };
-  }, [isAstrologer, userId, dispatch]);
+  }, [isAstrologer, userId, astrologerId, roomId, dispatch, navigation]);
 
   useEffect(() => {
     return () => {
@@ -568,8 +576,12 @@ const AstrologyChatComponent = () => {
                     />
 
                     <TouchableOpacity
-                      style={styles.sendButton}
+                      style={[
+                        styles.sendButton,
+                        newMessage.trim().length === 0 && styles.sendButtonDisabled,
+                      ]}
                       onPress={() => sendMessage()}
+                      disabled={newMessage.trim().length === 0 || uploading}
                     >
                       <Text style={styles.sendButtonText}>Send</Text>
                     </TouchableOpacity>
@@ -641,6 +653,9 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     justifyContent: "center",
     alignItems: "center",
+  },
+  sendButtonDisabled: {
+    backgroundColor: "#b0c4de",
   },
   sendButtonText: {
     color: styleConstants.color.textWhiteColor,
