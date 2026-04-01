@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "681629277512",
+    "project_id": "good-luck-demo",
+    "storage_bucket": "good-luck-demo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:681629277512:android:ceccf3855b2176f7ae277d",
+        "android_client_info": {
+          "package_name": "com.app.goodluckapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlRh4iMnuJ_rctNQu_rs8lTTMK8fmLjT4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
