@@ -79,8 +79,8 @@ android {
         applicationId "com.app.goodluckapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 40
-        versionName "1.1.7"
+        versionCode 45
+        versionName "2.2.3"
 
     }
     signingConfigs {

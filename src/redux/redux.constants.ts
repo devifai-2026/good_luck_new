@@ -84,6 +84,7 @@ export interface IUserDetails {
   selectedChipValue?: ChipValue;
   searchText?: string;
   wallet?: any;
+  astrologerRequest?: any;
 }
 
 export const IChatInitialState: IAstrologyChatDetails = {

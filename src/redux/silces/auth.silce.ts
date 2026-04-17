@@ -83,6 +83,7 @@ export const authSlice = createSlice({
           supernote: action.payload.supernote,
           promocode: action.payload.promocode,
           isLocalServiceSubscribed: action.payload.isLocalServiceSubscribed,
+          astrologerRequest: action.payload.astrologerRequest,
         },
       };
     },

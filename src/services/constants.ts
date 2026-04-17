@@ -97,6 +97,7 @@ export const endPoints = {
   postReviewRatingForAstrologer: "/astrologer/post-review",
   getReviewRatingForAstrologer: "/astrologer/getall-reviews",
   getAstrologerAllCategory: "/astrologer/category/getAll",
+  getAstrologerRequestStatus: "/astrologer/request/status",
   getAstrologerTransactionHistory: "/astrologer/transaction-history",
   toogleAstrologerState: "/astrologer/toggle",
 

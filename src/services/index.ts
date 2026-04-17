@@ -96,10 +96,7 @@ export const addNewCategory = (payload: any) => {
 };
 
 export const createRazorPayOrder = (payload: any) => {
-  return axios.post(
-    URLs[enviornment].socketURL + endPoints.createRazorPayorder,
-    payload
-  );
+  return baseClient.post(endPoints.createRazorPayorder, payload);
 };
 
 export const createMatrimonyProfile = (payload: any, userId: string) => {
@@ -420,6 +417,10 @@ export const subscribeForAdvertisement = (payload: {
 
 export const getAllCategoryAstrologer = () => {
   return baseClient.get(endPoints.getAstrologerAllCategory);
+};
+
+export const getAstrologerRequestStatus = (userId: string) => {
+  return baseClient.get(endPoints.getAstrologerRequestStatus + "/" + userId);
 };
 
 export const postCreateMatchMaking = (userId: string, body: any) => {

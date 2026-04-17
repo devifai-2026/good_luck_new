@@ -634,17 +634,20 @@ export const useAdvertisementService = () => {
     try {
       setListLoading(true);
       const response = await getDashBoardAds();
-      console.log(response?.data, "dashboard ads");
-      const formattedDashBoardAdd = response?.data?.data?.map((adv: any) =>
-        formatHomeLandAdForCommonList(adv, PostCategory.Banner)
-      );
+      const formattedDashBoardAdd = response?.data?.data
+        ?.filter((adv: any) => adv?.isActive !== false)
+        .map((adv: any) => ({
+          id: adv._id,
+          image: adv.image,
+          phone: adv.phone,
+          type: PostCategory.Banner,
+        }));
 
-      setDashboardAds(formattedDashBoardAdd);
+      setDashboardAds(formattedDashBoardAdd ?? []);
       setListLoading(false);
     } catch (error) {
       setListLoading(false);
       console.error("Failed to get dashboard ads", error);
-      // return [];
     }
   };
 

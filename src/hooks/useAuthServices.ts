@@ -109,6 +109,7 @@ const useAuthService = () => {
 
             isLocalServiceSubscribed:
               data?.localSubscription?.isSubscribed ?? false,
+            astrologerRequest: data?.astrologerRequest ?? null,
           })
         );
         const astrologerCategory = await getAllCategoryAstrologer();
@@ -117,15 +118,35 @@ const useAuthService = () => {
           data?.role === UserRoleEnum.astrologer &&
           data?.astrologer?._id?.length > 0
         ) {
-          navigation.navigate("astrologerhomeascreen");
-        } else if (
-          data?.role === UserRoleEnum.astrologer &&
-          !data?.astrologer?._id
-        )
-          navigation.navigate("astrologerregistration");
+          navigation.reset({ index: 0, routes: [{ name: "astrologerhomeascreen" }] });
+        } else if (data?.role === UserRoleEnum.astrologer && !data?.astrologer?._id) {
+          const requestStatus = data?.astrologerRequest?.request_status;
+          if (requestStatus === "pending") {
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "astrologerpendingstatus", params: { status: "pending" } }],
+            });
+          } else if (requestStatus === "rejected") {
+            navigation.reset({
+              index: 0,
+              routes: [
+                {
+                  name: "astrologerpendingstatus",
+                  params: {
+                    status: "rejected",
+                    rejectionMessage: data?.astrologerRequest?.request_status_message || "",
+                  },
+                },
+              ],
+            });
+          } else {
+            // No pending/rejected request — astrologer hasn't submitted the form yet
+            navigation.reset({ index: 0, routes: [{ name: "astrologerregistration" }] });
+          }
+        }
         else if (data?.role === UserRoleEnum.affiliateMarketer) {
-          navigation.navigate("affiliateMarketerhome");
-        } else navigation.navigate("home");
+          navigation.reset({ index: 0, routes: [{ name: "affiliateMarketerhome" }] });
+        } else navigation.reset({ index: 0, routes: [{ name: "home" }] });
       } else {
         dispatch(authFailed("Something went wrong"));
       }

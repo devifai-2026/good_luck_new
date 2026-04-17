@@ -19,8 +19,9 @@ const YouTubeVideoPlayer = () => {
   const { liveTV, getLiveTvAll, loading } = usePanchang();
 
   const extractVideoId = (url: string): string | null => {
+    if (!url) return null;
     const regExp =
-      /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/ ]{11})/;
+      /(?:youtube\.com\/(?:watch\?.*?v=|embed\/|v\/|live\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     const match = url.match(regExp);
     return match ? match[1] : null;
   };
@@ -62,7 +63,7 @@ const YouTubeVideoPlayer = () => {
                   height={isFullScreen ? height : 200} // Adjust height dynamically
                   width={isFullScreen ? width : 350} // Adjust width dynamically
                   // play={true}
-                  videoId={extractVideoId(tv?.youtubeLink) ?? "zPA-vbAXnDg"}
+                  videoId={extractVideoId(tv?.youtubeLink) ?? ""}
                   onError={onError}
                   onFullScreenChange={onFullScreenChange} // Corrected fullscreen handling
                 />

@@ -15,7 +15,6 @@ export const paymentCredentials = {
   description: "Payment for good luck!",
 };
 export const AGORA_APP_ID = "ef40e7bf43a541bfa99779b82eca7957";
-export const SIGNAL_APP_ID = "b9c7be6f06ac449191f9fed8e7a58104";
 export const HomeScreenOptions = {
   landhomelocalservicespage: {
     optionOne: {

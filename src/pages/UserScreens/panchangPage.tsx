@@ -6,7 +6,6 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
-  Modal,
   Dimensions,
 } from "react-native";
 import { styleConstants } from "../../styles";
@@ -94,7 +93,6 @@ const Panchang: React.FC = () => {
   const [currentIndex, setcurrentIndex] = useState(0);
 
   const [showModal, setShowModal] = useState(false);
-  const [showPanchangModal, setShowPanchangModal] = useState(false);
   const navigation = useNavigation<any>();
 
   const handleDateChange = (selectedDate?: string) => {
@@ -127,6 +125,11 @@ const Panchang: React.FC = () => {
     getDateWisePanchang(formttedDate);
   }, []);
 
+  const { width: screenWidth } = Dimensions.get("window");
+  const menuItemWidth = screenWidth * 0.22;
+  const menuRowHeight = menuItemWidth + 20;
+  const menuScrollHeight = menuRowHeight * 2 + menuRowHeight * 0.35;
+
   return (
     <HomeScreenLayout>
       {showModal ? (
@@ -139,7 +142,7 @@ const Panchang: React.FC = () => {
           setCurrentIndex={setcurrentIndex}
         />
       ) : (
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.mainContainer}>
           <View
             style={{
               display: "flex",
@@ -164,90 +167,59 @@ const Panchang: React.FC = () => {
             <DateInput date={date} onChangeText={handleDateChange} />
           </View>
 
-          {/* Panchang Image Card */}
-          {loading ? (
-            <View style={styles.panchangCard}>
+          {/* Panchang Image - fills available space, swipe to change date */}
+          <View style={styles.imageContainer}>
+            {loading ? (
               <ActivityIndicator
                 size="large"
                 color={styleConstants.color.primaryColor}
               />
-            </View>
-          ) : panchang?.image ? (
-            <TouchableOpacity
-              style={styles.panchangCard}
-              onPress={() => setShowPanchangModal(true)}
-              activeOpacity={0.9}
-            >
+            ) : panchang?.image ? (
               <Image
                 source={{ uri: panchang.image }}
-                style={styles.panchangThumbnail}
+                style={styles.panchangImage}
+                resizeMode="contain"
               />
-              <View style={styles.viewOverlay}>
-                <Icon name="fullscreen" size={16} color="#fff" />
-                <Text style={styles.viewOverlayText}>Tap to view full Panchang</Text>
-              </View>
-            </TouchableOpacity>
-          ) : (
-            <View style={styles.panchangCard}>
+            ) : (
               <NoDataComponent message="Panchang for this date not found" />
-            </View>
-          )}
-
-          {/* Full-screen Panchang Modal */}
-          <Modal
-            visible={showPanchangModal}
-            transparent
-            animationType="fade"
-            onRequestClose={() => setShowPanchangModal(false)}
-          >
-            <View style={styles.modalOverlay}>
-              <TouchableOpacity
-                style={styles.modalCloseBtn}
-                onPress={() => setShowPanchangModal(false)}
-              >
-                <Icon name="close" size={26} color="#fff" />
-              </TouchableOpacity>
-              <ScrollView
-                contentContainerStyle={styles.modalScrollContent}
-                showsVerticalScrollIndicator={false}
-              >
-                <Image
-                  source={{ uri: panchang?.image }}
-                  style={styles.modalImage}
-                  resizeMode="contain"
-                />
-              </ScrollView>
-            </View>
-          </Modal>
-
-          {/* Scrollable Menu */}
-          <View style={styles.menuContainer}>
-            {menuItems.map((item) => (
-              <View key={item.id} style={styles.menuItem}>
-                <TouchableOpacity
-                  style={styles.itemContainer}
-                  onPress={() => handleClick(item?.route)}
-                >
-                  <Image
-                    style={styles.icon}
-                    source={item.icon}
-                    resizeMode="contain"
-                  />
-                </TouchableOpacity>
-                <Text style={styles.itemText}>{item.title}</Text>
-              </View>
-            ))}
+            )}
           </View>
-        </ScrollView>
+
+          {/* Menu Items - first 8 visible, 9th scrollable */}
+          <ScrollView
+            style={[styles.menuScrollContainer, { maxHeight: menuScrollHeight }]}
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+            nestedScrollEnabled
+          >
+            <View style={styles.menuContainer}>
+              {menuItems.map((item) => (
+                <View key={item.id} style={styles.menuItem}>
+                  <TouchableOpacity
+                    style={styles.itemContainer}
+                    onPress={() => handleClick(item?.route)}
+                  >
+                    <Image
+                      style={styles.icon}
+                      source={item.icon}
+                      resizeMode="contain"
+                    />
+                  </TouchableOpacity>
+                  <Text style={styles.itemText}>{item.title}</Text>
+                </View>
+              ))}
+            </View>
+          </ScrollView>
+        </View>
       )}
     </HomeScreenLayout>
   );
 };
 
 const styles = StyleSheet.create({
-  scrollContainer: {
-    flexGrow: 1,
-    padding: 12,
+  mainContainer: {
+    flex: 1,
+    paddingHorizontal: 12,
     backgroundColor: "#fff",
   },
   title: {
@@ -257,94 +229,40 @@ const styles = StyleSheet.create({
     marginLeft: 16,
   },
   dateInputContainer: {
-    marginBottom: 12,
+    marginBottom: 8,
   },
-  panchangCard: {
-    width: "100%",
-    height: 130,
-    borderRadius: 16,
+  imageContainer: {
+    flex: 1,
     overflow: "hidden",
-    marginBottom: 10,
-    backgroundColor: "#f0f0f0",
     justifyContent: "center",
     alignItems: "center",
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
   },
-  panchangThumbnail: {
+  panchangImage: {
     width: "100%",
     height: "100%",
-    resizeMode: "cover",
   },
-  viewOverlay: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: "rgba(0,0,0,0.48)",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 7,
-    gap: 6,
+  menuScrollContainer: {
+    flexGrow: 0,
   },
-  viewOverlayText: {
-    color: "#fff",
-    fontSize: 13,
-    fontFamily: styleConstants.fontFamily,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.93)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalCloseBtn: {
-    position: "absolute",
-    top: 48,
-    right: 16,
-    zIndex: 10,
-    backgroundColor: "rgba(255,255,255,0.15)",
-    borderRadius: 20,
-    padding: 6,
-  },
-  modalScrollContent: {
-    flexGrow: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 80,
-    paddingHorizontal: 12,
-  },
-  modalImage: {
-    width: Dimensions.get("window").width - 24,
-    height: Dimensions.get("window").height * 0.78,
-  },
-
   menuContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
     paddingHorizontal: 4,
-    marginTop: 8,
   },
   menuItem: {
-    width: "23%", // ~4 per row with space between
+    width: "23%",
     marginBottom: 6,
     alignItems: "center",
     justifyContent: "flex-start",
   },
   itemContainer: {
     width: "100%",
-    aspectRatio: 1, // keeps icon button square
+    aspectRatio: 1,
     borderRadius: 12,
     backgroundColor: "#f5f5f5",
     justifyContent: "center",
     alignItems: "center",
-
-    // shadow effect
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,

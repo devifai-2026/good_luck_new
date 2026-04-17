@@ -60,6 +60,7 @@ import ContactUsPage from "./pages/contactUsPage";
 import VoiceCallScreen from "./pages/UserScreens/VoiceCallScreen";
 import AstrologerVoiceCallScreen from "./pages/AstrologerScreens/AstrologerVoiceCallScreen";
 import UserVoiceCallScreen from "./pages/UserScreens/UserVoiceCallScreen";
+import AstrologerApprovalStatusScreen from "./pages/AstrologerScreens/AstrologerApprovalStatusScreen";
 
 const Routes = () => {
   const Stack = createNativeStackNavigator();
@@ -75,7 +76,9 @@ const Routes = () => {
       <Stack.Navigator
         initialRouteName={getInitialRouteName(
           userDetails?.role as UserRoleEnum,
-          userDetails?.astrologerId ?? undefined
+          userDetails?.astrologerId ?? undefined,
+          userDetails?.astrologerDetails,
+          userDetails?.astrologerRequest ?? undefined
         )}
         screenOptions={{
           headerShown: false,
@@ -120,6 +123,10 @@ const Routes = () => {
           <Stack.Screen
             name="astrologerregistration"
             component={isAuthenticated ? AstrologerForm : SignInSignUp}
+          />
+          <Stack.Screen
+            name="astrologerpendingstatus"
+            component={isAuthenticated ? AstrologerApprovalStatusScreen : SignInSignUp}
           />
           <Stack.Screen
             name="astrologerprofileedit"

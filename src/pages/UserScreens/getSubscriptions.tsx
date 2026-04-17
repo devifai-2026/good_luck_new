@@ -81,17 +81,17 @@ const SubscriptionModal = () => {
     </TouchableOpacity>
   );
 
-  const paymentCallback = async (id: string) => {
+  const paymentCallback = async (data: { paymentId: string; orderId: string; signature: string }) => {
     if (isNotlocalservices)
       await subscribeForHomeLandJobAdvertisement(
         selectedPlan?.key ?? "one_month_plan",
-        id,
+        data.paymentId,
         promocodeValid ? promocode : ""
       );
     else {
       await subscribeForLocalServices(
         selectedPlan?.key ?? "one_month_plan",
-        id,
+        data,
         promocodeValid ? promocode : ""
       );
     }
@@ -203,9 +203,7 @@ const SubscriptionModal = () => {
 
         {/* Confirm Button */}
         <PaymentPage
-          paymentType={
-            isNotlocalservices ? PaymentType.independent : PaymentType.wallet
-          }
+          paymentType={PaymentType.independent}
           callback={paymentCallback}
           amount={selectedPlan?.amount ?? 0}
           mobileNumber={mobileNumber ?? ""}

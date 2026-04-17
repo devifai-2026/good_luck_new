@@ -94,15 +94,16 @@ const useLocalServices = () => {
 
   const subscribeForLocalServices = async (
     planType: "one_month_plan" | "one_year_plan",
-    transactionid: string,
+    razorpayData: { paymentId: string; orderId: string; signature: string },
     promoCode?: string
   ) => {
     try {
-      // //"calling");
       const payload = {
         userId: userId ?? "",
         planType,
-        transactionid,
+        razorpay_payment_id: razorpayData.paymentId,
+        razorpay_order_id: razorpayData.orderId,
+        razorpay_signature: razorpayData.signature,
         ...(promoCode && promoCode?.length > 0
           ? { promoCode: parseInt(promoCode) }
           : {}),

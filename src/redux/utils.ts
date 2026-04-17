@@ -63,13 +63,21 @@ export const getSpecalizationNameById = (
 
 export const getInitialRouteName = (
   role: UserRoleEnum,
-  astrologerId?: string
+  astrologerId?: string,
+  astrologerDetails?: any,
+  astrologerRequest?: any
 ) => {
   if (role === UserRoleEnum.astrologer) {
     // console.log(astrologerId);
     if (astrologerId && astrologerId?.length > 0) {
       return "astrologerhomeascreen";
     }
+    // Form was submitted (request exists) or had a prior astrologer record
+    // Show the status screen which will auto-check the real status on mount
+    if (astrologerRequest || astrologerDetails) {
+      return "astrologerpendingstatus";
+    }
+    // No form submitted yet
     return "astrologerregistration";
   } else if (role === UserRoleEnum.affiliateMarketer) {
     return "affiliateMarketerhome";

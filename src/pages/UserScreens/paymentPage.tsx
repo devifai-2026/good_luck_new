@@ -5,7 +5,8 @@ import { useDispatch } from "react-redux";
 import { ActivityIndicator, Button, Text } from "react-native-paper";
 import { styleConstants } from "../../styles/constants";
 
-import usePaymentService from "../../hooks/usePaymentService";
+import usePaymentService, { RazorpayPaymentData } from "../../hooks/usePaymentService";
+import { notifyMessage } from "../../hooks/useDivineShopServices";
 
 import { paymentPage as styles } from "../../styles";
 
@@ -20,7 +21,7 @@ const PaymentPage = (props: {
   paymentType: PaymentType;
   mobileNumber: string;
   amount: number;
-  callback: (id: string) => Promise<void>;
+  callback: (data: RazorpayPaymentData) => Promise<void>;
   buttonState: boolean;
   buttonText?: string;
 }) => {
@@ -30,25 +31,25 @@ const PaymentPage = (props: {
 
   const [loading, setloading] = useState(false);
 
-  // Access user details from Redux
-
-  // const buttonState = useSelector(
-  //   (state: RootState) => state.order.disableButton
-  // );
-
-  // Handle payment logic
-
   const payNow = async () => {
     setloading(true);
     try {
-      if (paymentType === PaymentType.independent)
-        await handlePayment(amount, callback);
-      else
-        await callback(
-          `wallet-${Math.random().toString(36).substring(2)}-${Date.now()}`
-        );
-    } catch (error) {
-      console.error(error);
+      if (paymentType === PaymentType.independent) {
+        const result = await handlePayment(amount, callback);
+        if (result.cancelled) {
+          notifyMessage("Payment cancelled.");
+        } else if (!result.success) {
+          notifyMessage(result.error ?? "Payment failed. Please try again.");
+        }
+      } else {
+        await callback({
+          paymentId: `wallet-${Math.random().toString(36).substring(2)}-${Date.now()}`,
+          orderId: "",
+          signature: "",
+        });
+      }
+    } catch (error: any) {
+      notifyMessage(error?.message ?? "Payment failed. Please try again.");
     } finally {
       setloading(false);
     }
