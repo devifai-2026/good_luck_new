@@ -6,6 +6,7 @@ import {
   getLiveTV,
   getPanchangByDate,
   getRashifalByDate,
+  getAllRashifal,
 } from "../services";
 
 const usePanchang = () => {
@@ -28,18 +29,19 @@ const usePanchang = () => {
     }
   };
 
-  const getDateWiseRashifal = async (date: string) => {
+  const getDateWiseRashifal = async (_date: string) => {
     setpanchangImages([]);
     try {
-      console.log(date);
       setloading(true);
-      const response = await getRashifalByDate(date);
-      console.log(response?.data?.data, "get rashifal by date");
-
-      setpanchangImages([response?.data?.data?.image]);
+      const response = await getAllRashifal();
+      const entries: any[] = response?.data?.data ?? [];
+      const sorted = [...entries].sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+      setpanchangImages(sorted.map((e) => e.image).filter(Boolean));
     } catch (error) {
       console.error(error);
-      setpanchang(null);
+      setpanchangImages([]);
     } finally {
       setloading(false);
     }

@@ -439,6 +439,10 @@ export const getRashifalByDate = (date: string) => {
   return baseClient.get(endPoints.rashiFalGetByDate + "/" + date);
 };
 
+export const getAllRashifal = () => {
+  return baseClient.get(endPoints.rashifalGetAll);
+};
+
 export const getCalender = () => {
   return baseClient.get(endPoints.calenderGetAll);
 };

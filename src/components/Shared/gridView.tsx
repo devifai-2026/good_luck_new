@@ -3,20 +3,29 @@ import {
   View,
   Image,
   Text,
-  StyleSheet,
   FlatList,
   Dimensions,
   TouchableOpacity,
-  Alert,
 } from "react-native";
-
 import { gridViewStyle as styles } from "../../styles";
 
-const screenWidth = Dimensions.get("window").width; // Get the screen width
-const itemPadding = 10; // Padding around each grid item
-const numberOfColumns = 2; // Set number of items per row to 2
-const itemSize =
-  (screenWidth - (numberOfColumns + 1) * itemPadding) / numberOfColumns; // Calculate item size
+const screenWidth = Dimensions.get("window").width;
+const COLUMNS = 2;
+const GUTTER = 12;
+const CARD_GAP = 10;
+const cardWidth =
+  (screenWidth - GUTTER * 2 - CARD_GAP * (COLUMNS - 1)) / COLUMNS;
+const imageHeight = cardWidth * 0.88;
+
+function getDiscountPercent(
+  original: string,
+  discounted: string
+): number | null {
+  const orig = parseFloat(String(original).replace(/[^\d.]/g, ""));
+  const disc = parseFloat(String(discounted).replace(/[^\d.]/g, ""));
+  if (!orig || !disc || disc >= orig) return null;
+  return Math.round(((orig - disc) / orig) * 100);
+}
 
 const GridView = ({
   navigation,
@@ -31,38 +40,45 @@ const GridView = ({
       data={productList}
       renderItem={({
         item: { id, source, title, originalPrice, discountedPrice },
-      }) => (
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate("buyProduct", { id: id });
-          }}
-        >
-          <View
-            style={{
-              ...styles.itemContainer,
-              width: itemSize - 18,
-              height: itemSize + 80,
-            }}
+      }) => {
+        const discount = getDiscountPercent(
+          String(originalPrice),
+          String(discountedPrice)
+        );
+        return (
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={() => navigation.navigate("buyProduct", { id })}
+            style={styles.cardWrapper}
           >
-            <Image
-              source={source}
-              style={{
-                ...styles.image,
-                height: itemSize - 10,
-                width: itemSize - 30,
-              }}
-            />
-            <Text style={styles.title}>{title}</Text>
-            <View style={styles.priceContainer}>
-              <Text style={styles.originalPrice}>{originalPrice}</Text>
-              <Text style={styles.discountedPrice}>{discountedPrice}</Text>
+            <View style={[styles.card, { width: cardWidth }]}>
+              <View style={[styles.imageWrapper, { height: imageHeight }]}>
+                <Image source={source} style={styles.image} />
+                {discount !== null && (
+                  <View style={styles.discountBadge}>
+                    <Text style={styles.discountBadgeText}>{discount}% OFF</Text>
+                  </View>
+                )}
+              </View>
+
+              <View style={styles.infoContainer}>
+                <Text style={styles.title} numberOfLines={2}>
+                  {title}
+                </Text>
+                <View style={styles.priceRow}>
+                  <Text style={styles.discountedPrice}>{discountedPrice}</Text>
+                  {originalPrice !== discountedPrice && (
+                    <Text style={styles.originalPrice}>{originalPrice}</Text>
+                  )}
+                </View>
+              </View>
             </View>
-          </View>
-        </TouchableOpacity>
-      )}
+          </TouchableOpacity>
+        );
+      }}
       keyExtractor={(item) => item.id}
-      numColumns={numberOfColumns}
-      key={numberOfColumns} // Important for refreshing layout when screen size changes
+      numColumns={COLUMNS}
+      key={COLUMNS}
       contentContainerStyle={styles.gridContainer}
     />
   );

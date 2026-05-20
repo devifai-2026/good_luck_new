@@ -16,7 +16,6 @@ import { styleConstants } from "../../styles";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const { width, height } = Dimensions.get("window");
-console.log(width);
 
 interface ImageModalProps {
   visible: boolean;
@@ -35,10 +34,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
   loading,
   setCurrentIndex,
 }) => {
-  // const [activeIndex, setActiveIndex] = useState(currentIndex);
   const flatListRef = useRef<FlatList<any>>(null);
-
-  console.log(currentIndex);
 
   const handleNext = () => {
     if (currentIndex < images.length - 1) {
@@ -122,13 +118,13 @@ const ImageModal: React.FC<ImageModalProps> = ({
           )}
 
           {/* Navigation Buttons */}
-          {setCurrentIndex > 0 && (
+          {currentIndex > 0 && (
             <TouchableOpacity style={styles.leftButton} onPress={handlePrev}>
               <Icon name="arrow-back-ios" size={24} color="white" />
             </TouchableOpacity>
           )}
 
-          {setCurrentIndex < images.length - 1 && (
+          {currentIndex < images.length - 1 && (
             <TouchableOpacity style={styles.rightButton} onPress={handleNext}>
               <Icon name="arrow-forward-ios" size={24} color="white" />
             </TouchableOpacity>

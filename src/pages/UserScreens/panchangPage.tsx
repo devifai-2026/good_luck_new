@@ -96,8 +96,6 @@ const Panchang: React.FC = () => {
   const navigation = useNavigation<any>();
 
   const handleDateChange = (selectedDate?: string) => {
-    console.log(selectedDate);
-
     if (selectedDate) {
       const formttedDate = selectedDate?.split("T")[0];
       getDateWisePanchang(formttedDate);
@@ -105,12 +103,23 @@ const Panchang: React.FC = () => {
     }
   };
 
+  const navigateDate = (days: number) => {
+    const currentDateStr = date.split("T")[0];
+    const d = new Date(currentDateStr + "T12:00:00");
+    d.setDate(d.getDate() + days);
+    const newDateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    getDateWisePanchang(newDateStr);
+    setDate(newDateStr + "T12:00:00.000Z");
+  };
+
   const handleClick = (type: string) => {
     console.log(type);
     setShowModal(true);
     if (type === "rasifal") {
       setcurrentIndex(0);
-      getDateWiseRashifal(new Date().toISOString()?.split("T")[0]);
+      const today = new Date();
+      const localDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+      getDateWiseRashifal(localDate);
     } else if (type === "calender") {
       setcurrentIndex(new Date().getMonth());
       getCompleteCalender();
@@ -167,7 +176,7 @@ const Panchang: React.FC = () => {
             <DateInput date={date} onChangeText={handleDateChange} />
           </View>
 
-          {/* Panchang Image - fills available space, swipe to change date */}
+          {/* Panchang Image - fills available space, tap arrows to change date */}
           <View style={styles.imageContainer}>
             {loading ? (
               <ActivityIndicator
@@ -183,6 +192,20 @@ const Panchang: React.FC = () => {
             ) : (
               <NoDataComponent message="Panchang for this date not found" />
             )}
+
+            <TouchableOpacity
+              style={styles.prevDateButton}
+              onPress={() => navigateDate(-1)}
+            >
+              <Icon name="arrow-back-ios" size={22} color="rgba(0,0,0,0.5)" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.nextDateButton}
+              onPress={() => navigateDate(1)}
+            >
+              <Icon name="arrow-forward-ios" size={22} color="rgba(0,0,0,0.5)" />
+            </TouchableOpacity>
           </View>
 
           {/* Menu Items - first 8 visible, 9th scrollable */}
@@ -240,6 +263,26 @@ const styles = StyleSheet.create({
   panchangImage: {
     width: "100%",
     height: "100%",
+  },
+  prevDateButton: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 44,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.25)",
+  },
+  nextDateButton: {
+    position: "absolute",
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: 44,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.25)",
   },
   menuScrollContainer: {
     flexGrow: 0,

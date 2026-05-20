@@ -41,48 +41,92 @@ export const topscrollableMenu = StyleSheet.create({
 });
 
 export const gridViewStyle = StyleSheet.create({
-  gridContainer: { alignItems: "center", justifyContent: "center" },
-  itemContainer: {
-    // width: itemSize - 15,
-    // height: itemSize + 80, // Adjust height to include space for title and prices
-    marginBottom: 20, // Add space between rows
-    marginRight: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: styleConstants.color.backgroundGrayColor, // Optional: Add background color for visual clarity
-    borderRadius: 10,
+  gridContainer: {
+    paddingHorizontal: 12,
+    paddingTop: 8,
+    paddingBottom: 24,
+  },
+  cardWrapper: {
+    marginBottom: 12,
+    marginRight: 10,
+  },
+  card: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    overflow: "hidden",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.10,
+    shadowRadius: 8,
+  },
+  imageWrapper: {
+    width: "100%",
+    backgroundColor: styleConstants.color.backgroundGrayColor,
+    position: "relative",
   },
   image: {
-    // width: itemSize - 10, // Slightly smaller to fit nicely within the container
-    // height: itemSize - 10,
-    borderRadius: 10,
+    width: "100%",
+    height: "100%",
     resizeMode: "cover",
+  },
+  discountBadge: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    backgroundColor: styleConstants.color.primaryColor,
+    borderRadius: 8,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+  },
+  discountBadgeText: {
+    color: "#FFF",
+    fontSize: 10,
+    fontWeight: "700",
+    fontFamily: styleConstants.fontFamily,
+  },
+  infoContainer: {
+    padding: 10,
+    paddingBottom: 12,
   },
   title: {
     color: styleConstants.color.textBlackColor,
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: styleConstants.fontFamily,
-
-    textAlign: "center",
-    marginVertical: 5, // Space between the image and title
+    lineHeight: 18,
+    marginBottom: 6,
+  },
+  priceRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: 6,
+  },
+  discountedPrice: {
+    fontSize: 14,
+    color: styleConstants.color.primaryColor,
+    fontWeight: "700",
+    fontFamily: styleConstants.fontFamily,
+  },
+  originalPrice: {
+    fontSize: 11,
+    color: styleConstants.color.textGrayColor,
+    textDecorationLine: "line-through",
+    fontFamily: styleConstants.fontFamily,
+  },
+  // legacy aliases — kept in case other screens reference them
+  itemContainer: {
+    marginBottom: 20,
+    marginRight: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: styleConstants.color.backgroundGrayColor,
+    borderRadius: 10,
   },
   priceContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 5, // Space between the title and prices
-  },
-  originalPrice: {
-    fontSize: 14,
-    color: styleConstants.color.textGrayColor,
-    textDecorationLine: "line-through", // Strikethrough effect
-    marginRight: 10, // Space between the original price and discounted price
-    fontFamily: styleConstants.fontFamily,
-  },
-  discountedPrice: {
-    fontSize: 14,
-
-    color: styleConstants.color.textBlackColor, // You can adjust this color based on your design
-    fontFamily: styleConstants.fontFamily,
+    marginTop: 5,
   },
 });
 
