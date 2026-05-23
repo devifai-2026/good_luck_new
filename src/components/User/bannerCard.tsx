@@ -59,9 +59,9 @@ const BannerCard: React.FC<IBannerCard> = ({
               style={landPageStyle.featuredImage}
             />
             {/* SPONSORED badge — top left */}
-            <View style={landPageStyle.featuredAdBadge}>
+            {/* <View style={landPageStyle.featuredAdBadge}>
               <Text style={landPageStyle.featuredAdBadgeText}>SPONSORED</Text>
-            </View>
+            </View> */}
 
             {/* Price badge — bottom right of image */}
             {price ? (

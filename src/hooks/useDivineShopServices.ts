@@ -162,8 +162,8 @@ const useDivineShopServices = () => {
 
       getOrderDetailsByOrderId(order?._id);
 
-      navigation.navigate("paymentConfirm");
-      notifyMessage("Order added successfully");
+      notifyMessage("Order placed successfully!");
+      navigation.navigate("orderListing");
       setLoadingAddOrder(false);
     } catch (error: any) {
       setLoadingAddOrder(false);
@@ -173,21 +173,25 @@ const useDivineShopServices = () => {
   };
 
   const getOrderListByUserId = async () => {
+    if (!userId) {
+      setLoadingOrderList(false);
+      return;
+    }
     try {
       setLoadingOrderList(true);
-      const response = await getOrderList(userId ?? "");
-      const data = response.data.data;
+      const response = await getOrderList(userId);
+      const data = response.data.data ?? [];
       const tempList: any[] = [];
       for (let index = data.length - 1; index >= 0; index--) {
         const order = data[index];
         const temp = {
           id: order._id,
-          source: { uri: order.order_details.image },
+          source: { uri: order.order_details?.image },
           title: order.order_details?.productName,
           total: order?.total_price,
           isPaid: order.is_payment_done,
           isComplete: order.is_order_complete,
-          deliveryDate: order.order_details.deliveryDate,
+          deliveryDate: order.order_details?.deliveryDate,
         };
         tempList.push(temp);
       }
@@ -223,7 +227,7 @@ const useDivineShopServices = () => {
         title: order.order_details?.productName,
         total: order?.total_price,
         count: order?.quantity,
-        shipping: 100,
+        shipping: 1,
         subTotal: order?.order_details?.displayPrice * order?.quantity,
         discountedTotalPrice: actualPrice,
         tax: (actualPrice * 0.18).toFixed(2),

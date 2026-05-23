@@ -40,6 +40,45 @@ export const topscrollableMenu = StyleSheet.create({
   },
 });
 
+export const topscrollableMenuLarge = StyleSheet.create({
+  list: {
+    paddingHorizontal: 8,
+    paddingVertical: 12,
+  },
+  menuItem: {
+    alignItems: "center",
+    marginHorizontal: 8,
+    width: 90,
+  },
+  iconBox: {
+    width: 82,
+    height: 82,
+    borderRadius: 16,
+    backgroundColor: "rgba(253, 122, 91, 0.10)",
+    borderWidth: 1.5,
+    borderColor: "rgba(253, 122, 91, 0.25)",
+    overflow: "hidden",
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.10,
+    shadowRadius: 4,
+  },
+  icon: {
+    width: "100%",
+    height: "100%",
+  },
+  label: {
+    color: "#444",
+    fontSize: 10,
+    textAlign: "center",
+    marginTop: 7,
+    fontFamily: styleConstants.fontFamily,
+    fontWeight: "600",
+    lineHeight: 14,
+  },
+});
+
 export const gridViewStyle = StyleSheet.create({
   gridContainer: {
     paddingHorizontal: 12,

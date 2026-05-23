@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { View, Text, FlatList, TouchableOpacity, Image } from "react-native";
-import { topscrollableMenu as styles } from "../../styles";
+import { topscrollableMenu, topscrollableMenuLarge } from "../../styles";
 
 export interface IMenuItem {
   id: string;
@@ -12,9 +12,12 @@ export interface IMenuItem {
 interface ScrollableMenuProps {
   navigation: any;
   menuItems: IMenuItem[];
+  size?: "small" | "large";
 }
 
-const ScrollableMenu = ({ navigation, menuItems }: ScrollableMenuProps) => {
+const ScrollableMenu = ({ navigation, menuItems, size = "small" }: ScrollableMenuProps) => {
+  const styles = size === "large" ? topscrollableMenuLarge : topscrollableMenu;
+
   const renderItem = ({ item }: { item: IMenuItem }) => (
     <TouchableOpacity
       style={styles.menuItem}
@@ -22,7 +25,11 @@ const ScrollableMenu = ({ navigation, menuItems }: ScrollableMenuProps) => {
       onPress={() => navigation.navigate(item.route, { id: item.id })}
     >
       <View style={styles.iconBox}>
-        <Image style={styles.icon} source={item.icon} resizeMode="contain" />
+        <Image
+          style={styles.icon}
+          source={item.icon}
+          resizeMode={size === "large" ? "cover" : "contain"}
+        />
       </View>
       <Text style={styles.label} numberOfLines={2}>{item.title}</Text>
     </TouchableOpacity>

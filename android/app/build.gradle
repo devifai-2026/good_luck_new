@@ -79,8 +79,8 @@ android {
         applicationId "com.app.goodluckapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 46
-        versionName "2.2.4"
+        versionCode 50
+        versionName "2.2.8"
 
     }
     signingConfigs {
@@ -101,6 +101,12 @@ android {
     configurations.configureEach {
     exclude group: "io.agora.rtc", module: "full-screen-sharing"
 }
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
+    }
+
     buildTypes {
         debug {
             signingConfig signingConfigs.debug

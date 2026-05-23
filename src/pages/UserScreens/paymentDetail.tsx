@@ -20,8 +20,7 @@ import {
   setButtonState,
   setCurrentOrder,
 } from "../../redux/silces/order.slice";
-import { states } from "../../services/constants";
-import { getCityListByState } from "../../redux/utils";
+import { getCitiesByState, getIndianStates } from "../../services/stateCityService";
 import { notifyMessage } from "../../hooks/useDivineShopServices";
 import OptionModal from "../../components/Shared/modal";
 import { styleConstants } from "../../styles/constants";
@@ -29,7 +28,7 @@ import { validatePromoCode } from "../../services";
 
 const isGSTEnabled = false;
 
-const shippingCharge = 100;
+const shippingCharge = 1;
 const PaymentDetail = ({ navigation }: { navigation: any }) => {
   const image = useSelector((state: RootState) => state.product.productDetails);
   const phoneNumber = useSelector(
@@ -40,9 +39,10 @@ const PaymentDetail = ({ navigation }: { navigation: any }) => {
     useSelector((state: RootState) => state.auth.userDetails?.supernote) ?? "0";
   const dispatch = useDispatch();
   const [openModal, setopenModal] = useState<boolean>(false);
-  const [modalList, setmodalList] = useState<any[]>(states);
+  const [modalList, setmodalList] = useState<string[]>([]);
   const [modalType, setmodalType] = useState<"state" | "city">("state");
   const [modalValue, setmodalValue] = useState<string>("");
+  const [cityLoading, setCityLoading] = useState<boolean>(false);
 
   const [promocodeLoading, setpromocodeLoading] = useState(false);
 
@@ -96,7 +96,7 @@ const PaymentDetail = ({ navigation }: { navigation: any }) => {
 
     discountedPrice: image?.discountedPrice * formState.count,
 
-    shipping: 100,
+    shipping: shippingCharge,
     gst: isGSTEnabled ? image?.discountedPrice * formState.count * 0.18 : 0,
     total:
       image?.discountedPrice * formState.count +
@@ -144,20 +144,35 @@ const PaymentDetail = ({ navigation }: { navigation: any }) => {
     }
   };
 
-  const handleModalPress = (type: "state" | "city") => {
+  const handleModalPress = async (type: "state" | "city") => {
     setmodalType(type);
     if (type === "state") {
-      setmodalList(states);
+      try {
+        setCityLoading(true);
+        const stateList = await getIndianStates();
+        setmodalList(stateList);
+        setopenModal(true);
+      } catch {
+        notifyMessage("Failed to load states. Please try again.");
+      } finally {
+        setCityLoading(false);
+      }
     } else if (type === "city") {
-      if (formState?.state && formState?.state?.length > 1)
-        setmodalList(getCityListByState(formState?.state ?? "") as string[]);
-      else {
+      if (!formState?.state || formState.state.length < 2) {
         notifyMessage("You must select a state to fill city");
         return;
       }
+      try {
+        setCityLoading(true);
+        const cityList = await getCitiesByState(formState.state);
+        setmodalList(cityList);
+        setopenModal(true);
+      } catch {
+        notifyMessage("Failed to load cities. Please try again.");
+      } finally {
+        setCityLoading(false);
+      }
     }
-
-    setopenModal(true);
   };
 
   // Calculate delivery date as 10 days from the current date
@@ -277,28 +292,44 @@ const PaymentDetail = ({ navigation }: { navigation: any }) => {
                       }
                     />
 
-                    <TextInput
-                      maxLength={200}
-                      style={styles.input}
-                      placeholder="State"
-                      placeholderTextColor={styleConstants.color.textGrayColor}
-                      value={formState.state}
-                      onPress={() => {
-                        handleModalPress("state");
-                      }}
-                      // onChangeText={(text) => handleInputChange(text, "state")}
-                    />
-                    <TextInput
-                      maxLength={200}
-                      style={styles.input}
-                      placeholder="City"
-                      placeholderTextColor={styleConstants.color.textGrayColor}
-                      value={formState.city}
-                      onPress={() => {
-                        handleModalPress("city");
-                      }}
-                      // onChangeText={(text) => handleInputChange(text, "city")}
-                    />
+                    <TouchableOpacity
+                      onPress={() => !cityLoading && handleModalPress("state")}
+                      activeOpacity={0.7}
+                    >
+                      <View pointerEvents="none">
+                        <TextInput
+                          maxLength={200}
+                          style={styles.input}
+                          placeholder="State"
+                          placeholderTextColor={styleConstants.color.textGrayColor}
+                          value={
+                            cityLoading && modalType === "state"
+                              ? "Loading..."
+                              : formState.state
+                          }
+                          editable={false}
+                        />
+                      </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => !cityLoading && handleModalPress("city")}
+                      activeOpacity={0.7}
+                    >
+                      <View pointerEvents="none">
+                        <TextInput
+                          maxLength={200}
+                          style={styles.input}
+                          placeholder="City"
+                          placeholderTextColor={styleConstants.color.textGrayColor}
+                          value={
+                            cityLoading && modalType === "city"
+                              ? "Loading..."
+                              : formState.city
+                          }
+                          editable={false}
+                        />
+                      </View>
+                    </TouchableOpacity>
                     <TextInput
                       maxLength={6}
                       inputMode="numeric"

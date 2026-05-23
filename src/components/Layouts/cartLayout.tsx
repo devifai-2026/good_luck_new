@@ -13,6 +13,7 @@ import { useNavigation } from "@react-navigation/native";
 import useDivineShopServices, {
   notifyMessage,
 } from "../../hooks/useDivineShopServices";
+import { RazorpayPaymentData } from "../../hooks/usePaymentService";
 
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux";
@@ -44,9 +45,9 @@ const CartLayout: React.FC<{
 
   const { addOrder } = useDivineShopServices();
 
-  const handleAddOrder = async (transactionId: string) => {
+  const handleAddOrder = async (data: RazorpayPaymentData) => {
     try {
-      await addOrder(transactionId);
+      await addOrder(data.paymentId);
     } catch (error) {
       console.error(error);
     }

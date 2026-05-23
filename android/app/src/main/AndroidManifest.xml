@@ -43,7 +43,8 @@
       android:allowBackup="false"
       android:theme="@style/AppTheme"
       android:requestLegacyExternalStorage="true"
-      android:usesCleartextTraffic="true">
+      android:usesCleartextTraffic="true"
+      android:extractNativeLibs="false">
       
       <!-- Agora Service for Voice Calls -->
       <service

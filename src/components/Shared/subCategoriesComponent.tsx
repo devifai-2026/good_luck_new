@@ -54,7 +54,7 @@ const SubCategoriesComponent = () => {
         ) : categoryList?.length === 0 ? (
           <NoDataComponent message="No category avilable" type="small" />
         ) : (
-          <ScrollableTopMenu navigation={navigation} menuItems={categoryList} />
+          <ScrollableTopMenu navigation={navigation} menuItems={categoryList} size="large" />
         )}
       </View>
 

@@ -20,7 +20,7 @@ const ContactUsPage: React.FC = () => {
       : HomeScreenLayout;
 
   const openWhatsApp = () => {
-    const url = "https://wa.me/message/PJYT5MKLKQYDD1";
+    const url = "https://wa.me/919836526606";
     Linking.openURL(url).catch(() => {
       Alert.alert("Error", "WhatsApp is not installed or link is invalid");
     });
